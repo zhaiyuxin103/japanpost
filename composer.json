@@ -4,7 +4,8 @@
   "license": "MIT",
   "autoload": {
     "psr-4": {
-      "Yuxin\\Japanpost\\": "src/"
+      "Yuxin\\Japanpost\\": "src/",
+      "Tests\\": "tests/"
     }
   },
   "authors": [
@@ -16,5 +17,13 @@
   "minimum-stability": "stable",
   "require": {
     "guzzlehttp/guzzle": "^7.10"
+  },
+  "require-dev": {
+    "pestphp/pest": "^4.0"
+  },
+  "config": {
+    "allow-plugins": {
+      "pestphp/pest-plugin": true
+    }
   }
 }
