@@ -1,0 +1,23 @@
+{
+  "name": "japanpost",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "preinstall": "npx only-allow pnpm",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "prepare": "husky"
+  },
+  "keywords": [],
+  "author": [
+    {
+      "name": "YuXin Zhai",
+      "email": "zhaiyuxin103@hotmail.com"
+    }
+  ],
+  "license": "MIT",
+  "packageManager": "pnpm@10.15.0",
+  "devDependencies": {
+    "husky": "^9.1.7"
+  }
+}
