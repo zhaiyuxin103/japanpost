@@ -21,7 +21,7 @@ class Token
     public function getHttpClient(): Client
     {
         return new Client(array_merge($this->guzzleOptions, [
-            'base_uri' => 'https://stub-qz73x.da.pf.japanpost.jp/',
+            'base_uri' => 'https://api.da.pf.japanpost.jp/',
         ]));
     }
 
