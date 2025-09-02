@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yuxin\Japanpost;
 
 use GuzzleHttp\Client;
+use Yuxin\Japanpost\Exceptions\AddressesNotFoundException;
 
 class SearchCode
 {
@@ -54,6 +55,10 @@ class SearchCode
                 'searchtype' => $searchtype,
             ],
         ])->getBody()->getContents(), true);
+
+        if (empty($response['addresses'])) {
+            throw new AddressesNotFoundException('No addresses found');
+        }
 
         return $response['addresses'];
     }

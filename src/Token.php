@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yuxin\Japanpost;
 
 use GuzzleHttp\Client;
+use Yuxin\Japanpost\Exceptions\HttpException;
 
 class Token
 {
@@ -41,6 +42,10 @@ class Token
                 'secret_key' => $this->secretKey,
             ],
         ])->getBody()->getContents(), true);
+
+        if (empty($response['token'])) {
+            throw new HttpException('Failed to get token');
+        }
 
         return $response['token'];
     }

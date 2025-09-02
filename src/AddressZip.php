@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Yuxin\Japanpost;
 
 use GuzzleHttp\Client;
+use Yuxin\Japanpost\Exceptions\AddressesNotFoundException;
 
 class AddressZip
 {
@@ -45,6 +46,10 @@ class AddressZip
                 'limit' => $limit,
             ]),
         ])->getBody()->getContents(), true);
+
+        if (empty($response['addresses'])) {
+            throw new AddressesNotFoundException('No addresses found');
+        }
 
         return $response['addresses'];
     }
