@@ -61,5 +61,12 @@
       "@clear",
       "@php vendor/bin/pest"
     ]
-  }
+  },
+  "extra": {
+        "laravel": {
+            "providers": [
+                "Yuxin\\Japanpost\\ServiceProvider"
+            ]
+        }
+    }
 }
