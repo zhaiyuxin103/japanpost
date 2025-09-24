@@ -4,7 +4,9 @@
       "Bash(composer test:*)",
       "Bash(composer:*)",
       "Bash(mkdir:*)",
-      "Bash(php:*)"
+      "Bash(php:*)",
+      "Bash(curl:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

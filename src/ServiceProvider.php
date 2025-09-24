@@ -21,9 +21,15 @@ class ServiceProvider extends BaseServiceProvider
 
     private function registerBindings()
     {
+        $this->registerJapanpost();
         $this->registerToken();
         $this->registerAddressZip();
         $this->registerSearchCode();
+    }
+
+    private function registerJapanpost()
+    {
+        $this->app->singleton('japanpost', fn ($app) => new Japanpost($app));
     }
 
     private function registerToken()

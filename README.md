@@ -16,6 +16,7 @@
 - 📍 **地址查询** - 根据各种条件搜索日本地址信息
 - 🏷️ **邮编搜索** - 通过邮编代码查找对应的地址信息
 - 🚀 **Laravel 集成** - 原生 Laravel 服务提供者支持
+- 🎭 **Facade 支持** - 统一的 Facade 接口，简化调用
 - 🛡️ **异常处理** - 完善的错误处理和自定义异常
 - ⚙️ **灵活配置** - 支持自定义 HTTP 客户端选项
 - 💾 **Token 缓存** - 自动缓存 API 令牌，提高性能
@@ -39,6 +40,8 @@ composer require zhaiyuxin/japanpost
 ```bash
 php artisan vendor:publish --provider="Yuxin\Japanpost\ServiceProvider"
 ```
+
+这将发布配置文件到 `config/japanpost.php`。
 
 ## 🔧 配置
 
@@ -71,6 +74,37 @@ JAPANPOST_BASE_URI=https://api.da.pf.japanpost.jp/
 ```
 
 ## 📖 使用方法
+
+### 🎭 Laravel Facade 使用
+
+为了提供更简洁的 API，本包提供了一个统一的 Facade 接口。您可以通过 Facade 轻松访问所有服务：
+
+```php
+use Yuxin\Japanpost\Facades\Japanpost;
+
+// 获取 Token 服务
+$token = Japanpost::token();
+$authToken = $token->getToken();
+
+// 获取地址查询服务
+$addressZip = Japanpost::addressZip();
+$addresses = $addressZip->search([
+    'prefecture' => '東京都',
+    'city' => '渋谷区'
+]);
+
+// 获取邮编搜索服务
+$searchCode = Japanpost::searchCode();
+$addresses = $searchCode->search('150-0002');
+```
+
+**Facade 优势：**
+
+- ✅ **统一接口**：一个 Facade 访问所有服务
+- ✅ **简洁语法**：无需手动实例化或依赖注入
+- ✅ **单例模式**：每次调用返回相同的实例
+- ✅ **Laravel 集成**：完美融入 Laravel 生态系统
+- ✅ **类型提示**：完整的 IDE 类型提示支持
 
 ### 1. 获取 API 令牌
 
@@ -152,7 +186,7 @@ $searchService = new SearchCode($clientId, $secretKey, 'https://test-api.example
 $addresses = $searchService->search('150-0002');
 ```
 
-### 4. 环境切换示例
+### 5. 环境切换示例
 
 ```php
 // 生产环境配置
@@ -166,7 +200,7 @@ $testAddress = new AddressZip($clientId, $secretKey, 'https://test-api.example.c
 $testSearch = new SearchCode($clientId, $secretKey, 'https://test-api.example.com/');
 ```
 
-### 5. 自定义 HTTP 客户端选项
+### 6. 自定义 HTTP 客户端选项
 
 ```php
 $addressService = app('japanpost.address_zip');
@@ -227,12 +261,14 @@ composer lint
 tests/
 ├── Feature/                 # 集成测试
 │   ├── IntegrationTest.php # 服务集成测试
-│   └── ServiceProviderTest.php # 服务提供商测试
+│   ├── ServiceProviderTest.php # 服务提供商测试
+│   └── FacadeTest.php      # Facade 功能测试
 ├── Unit/                   # 单元测试
 │   ├── TokenTest.php      # Token 类测试
 │   ├── AddressZipTest.php  # AddressZip 类测试
 │   ├── SearchCodeTest.php # SearchCode 类测试
-│   └── ExceptionsTest.php # 异常处理测试
+│   ├── ExceptionsTest.php # 异常处理测试
+│   └── HelpersTest.php    # 辅助函数测试
 ├── TestCase.php           # 基础测试用例
 └── Pest.php              # Pest 配置文件
 ```
@@ -244,6 +280,7 @@ tests/
 - **完整覆盖**: 包含单元测试、集成测试和异常测试
 - **Laravel 集成**: 使用 Orchestra Testbench 模拟 Laravel 环境
 - **依赖注入**: 完整测试 Laravel 服务容器绑定
+- **Facade 测试**: 专门测试 Facade 功能和服务访问
 
 #### 编写测试示例
 
@@ -275,6 +312,8 @@ test('services can be used with dependency injection', function () {
 - ✅ Laravel 服务提供商集成测试
 - ✅ HTTP 客户端配置和选项测试
 - ✅ 缓存机制测试
+- ✅ Facade 功能和接口测试
+- ✅ 辅助函数和工具类测试
 
 ## 🔧 开发
 

@@ -71,7 +71,10 @@
         "laravel": {
             "providers": [
                 "Yuxin\\Japanpost\\ServiceProvider"
-            ]
+            ],
+            "aliases": {
+              "Japanpost": "Yuxin\\Japanpost\\Facades\\Japanpost"
+            }
         }
     }
 }
