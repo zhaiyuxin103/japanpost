@@ -1,6 +1,11 @@
 {
   "permissions": {
-    "allow": ["Bash(composer test:*)", "Bash(composer:*)", "Bash(mkdir:*)"],
+    "allow": [
+      "Bash(composer test:*)",
+      "Bash(composer:*)",
+      "Bash(mkdir:*)",
+      "Bash(php:*)"
+    ],
     "deny": [],
     "ask": []
   }

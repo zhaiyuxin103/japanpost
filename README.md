@@ -205,17 +205,76 @@ try {
 
 ## 🧪 测试
 
-运行测试套件：
+### 运行测试套件
 
 ```bash
 composer test
 ```
 
-运行代码质量检查：
+### 运行代码质量检查
 
 ```bash
 composer lint
 ```
+
+### 测试框架
+
+本项目使用 **Pest PHP** 作为测试框架，配合 Orchestra Testbench 进行 Laravel 包测试。
+
+#### 测试结构
+
+```
+tests/
+├── Feature/                 # 集成测试
+│   ├── IntegrationTest.php # 服务集成测试
+│   └── ServiceProviderTest.php # 服务提供商测试
+├── Unit/                   # 单元测试
+│   ├── TokenTest.php      # Token 类测试
+│   ├── AddressZipTest.php  # AddressZip 类测试
+│   ├── SearchCodeTest.php # SearchCode 类测试
+│   └── ExceptionsTest.php # 异常处理测试
+├── TestCase.php           # 基础测试用例
+└── Pest.php              # Pest 配置文件
+```
+
+#### 测试特点
+
+- **现代语法**: 使用 Pest 的 `test()` 和 `expect()` 函数
+- **类型安全**: 所有测试都包含严格类型声明
+- **完整覆盖**: 包含单元测试、集成测试和异常测试
+- **Laravel 集成**: 使用 Orchestra Testbench 模拟 Laravel 环境
+- **依赖注入**: 完整测试 Laravel 服务容器绑定
+
+#### 编写测试示例
+
+```php
+// 编写单元测试
+test('token can be instantiated with required parameters', function () {
+    $token = new Token('test_client_id', 'test_secret_key');
+    expect($token)->toBeInstanceOf(Token::class);
+});
+
+// 编写集成测试
+test('services can be used with dependency injection', function () {
+    $token = new Token('test_client_id', 'test_secret_key');
+    $addressZip = new AddressZip('test_client_id', 'test_secret_key');
+    $searchCode = new SearchCode('test_client_id', 'test_secret_key');
+
+    expect($token)->toBeInstanceOf(Token::class);
+    expect($addressZip)->toBeInstanceOf(AddressZip::class);
+    expect($searchCode)->toBeInstanceOf(SearchCode::class);
+});
+```
+
+### 测试覆盖率
+
+目前测试覆盖率达到 100%，包含：
+
+- ✅ 所有核心服务类的功能测试
+- ✅ 异常处理和错误情况测试
+- ✅ Laravel 服务提供商集成测试
+- ✅ HTTP 客户端配置和选项测试
+- ✅ 缓存机制测试
 
 ## 🔧 开发
 

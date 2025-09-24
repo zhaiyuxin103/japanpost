@@ -73,6 +73,21 @@ Uses Pest PHP with Orchestra Testbench for Laravel package testing. Test structu
 - `tests/Feature/` - Integration tests
 - `tests/Unit/` - Unit tests
 - `tests/TestCase.php` - Base test case setup
+- `tests/Pest.php` - Pest configuration with TestCase extension
+
+**Test Writing Guidelines:**
+
+- Use Pest's `test()` function for defining tests
+- Use `expect()` for assertions instead of PHPUnit assertions
+- Test files should not include `uses(TestCase::class)` as it's configured globally
+- Focus on descriptive test names that explain the behavior being tested
+- Use closures for test logic with proper dependency injection
+
+**Test Categories:**
+
+- **Unit Tests**: Test individual classes and methods in isolation
+- **Feature Tests**: Test integration between components and Laravel service provider
+- **Exception Tests**: Verify proper exception handling and error cases
 
 ## Code Style
 
