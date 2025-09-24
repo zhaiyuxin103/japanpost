@@ -14,7 +14,8 @@ class AddressZip
     public function __construct(
         protected ?string $clientId = null,
         protected ?string $secretKey = null,
-        protected ?string $token = null
+        protected string $baseUri = 'https://api.da.pf.japanpost.jp/',
+        protected ?string $token = null,
     ) {
         //
     }
@@ -22,7 +23,7 @@ class AddressZip
     public function getHttpClient(): Client
     {
         return new Client(array_merge($this->guzzleOptions, [
-            'base_uri' => 'https://api.da.pf.japanpost.jp/',
+            'base_uri' => $this->baseUri,
         ]));
     }
 

@@ -13,7 +13,8 @@ class Token
 
     public function __construct(
         protected string $clientId,
-        protected string $secretKey
+        protected string $secretKey,
+        protected string $baseUri = 'https://api.da.pf.japanpost.jp/',
     ) {
         //
     }
@@ -21,7 +22,7 @@ class Token
     public function getHttpClient(): Client
     {
         return new Client(array_merge($this->guzzleOptions, [
-            'base_uri' => 'https://api.da.pf.japanpost.jp/',
+            'base_uri' => $this->baseUri,
         ]));
     }
 
