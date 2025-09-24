@@ -9,27 +9,26 @@ use Yuxin\Japanpost\Exceptions\AddressesNotFoundException;
 
 class SearchCode
 {
-    protected array $guzzleOptions = [];
+    protected HttpClient $httpClient;
 
     public function __construct(
-        protected ?string $clientId = null,
-        protected ?string $secretKey = null,
-        protected string $baseUri = 'https://api.da.pf.japanpost.jp/',
+        protected ?string $clientId,
+        protected ?string $secretKey,
+        protected string $baseUri,
         protected ?string $token = null,
+        ?HttpClient $httpClient = null,
     ) {
-        //
+        $this->httpClient = $httpClient ?? new HttpClient($this->baseUri);
     }
 
     public function getHttpClient(): Client
     {
-        return new Client(array_merge($this->guzzleOptions, [
-            'base_uri' => $this->baseUri,
-        ]));
+        return $this->httpClient->getClient();
     }
 
     public function setGuzzleOptions(array $options): void
     {
-        $this->guzzleOptions = $options;
+        $this->httpClient->setOptions($options);
     }
 
     /**
@@ -44,7 +43,7 @@ class SearchCode
         int $choikitype = 1,
         int $searchtype = 1
     ): array {
-        $token    = $this->token ?: (new Token($this->clientId, $this->secretKey))->getToken();
+        $token    = $this->token ?: (new Token($this->clientId, $this->secretKey, $this->baseUri))->getToken();
         $response = json_decode($this->getHttpClient()->get('api/v1/searchcode/' . $code, [
             'headers' => [
                 'Authorization' => 'Bearer ' . $token,

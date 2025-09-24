@@ -5,26 +5,26 @@ declare(strict_types=1);
 use Yuxin\Japanpost\Token;
 
 test('token can be instantiated with required parameters', function (): void {
-    $token = new Token('test_client_id', 'test_secret_key');
+    $token = new Token('test_client_id', 'test_secret_key', 'https://api.da.pf.japanpost.jp/');
 
     expect($token)->toBeInstanceOf(Token::class);
 });
 
 test('token can be instantiated with all parameters', function (): void {
-    $token = new Token('test_client_id', 'test_secret_key', 'https://api.example.com/');
+    $token = new Token('test_client_id', 'test_secret_key', 'https://api.da.pf.japanpost.jp/');
 
     expect($token)->toBeInstanceOf(Token::class);
 });
 
 test('token has required methods', function (): void {
-    $token = new Token('test_client_id', 'test_secret_key');
+    $token = new Token('test_client_id', 'test_secret_key', 'https://api.da.pf.japanpost.jp/');
 
     // Token class has required methods
     expect($token)->toBeInstanceOf(Token::class);
 });
 
 test('token can set custom guzzle options', function (): void {
-    $token = new Token('test_client_id', 'test_secret_key');
+    $token = new Token('test_client_id', 'test_secret_key', 'https://api.da.pf.japanpost.jp/');
 
     $options = ['timeout' => 30, 'verify' => false];
     $token->setGuzzleOptions($options);
@@ -34,7 +34,7 @@ test('token can set custom guzzle options', function (): void {
 });
 
 test('token get http client returns guzzle client', function (): void {
-    $token = new Token('test_client_id', 'test_secret_key');
+    $token = new Token('test_client_id', 'test_secret_key', 'https://api.da.pf.japanpost.jp/');
 
     $client = $token->getHttpClient();
 
@@ -49,8 +49,9 @@ test('token handles different base uris', function (): void {
     ];
 
     foreach ($baseUris as $baseUri) {
-        $token  = new Token('test_client_id', 'test_secret_key', $baseUri);
-        $client = $token->getHttpClient();
+        $httpClient = new Yuxin\Japanpost\HttpClient($baseUri, []);
+        $token      = new Token('test_client_id', 'test_secret_key', $baseUri, null, $httpClient);
+        $client     = $token->getHttpClient();
 
         // Check that client was created successfully
         expect($client)->toBeInstanceOf(GuzzleHttp\Client::class);
@@ -58,7 +59,7 @@ test('token handles different base uris', function (): void {
 });
 
 test('token accepts various guzzle options', function (): void {
-    $token = new Token('test_client_id', 'test_secret_key');
+    $token = new Token('test_client_id', 'test_secret_key', 'https://api.da.pf.japanpost.jp/');
 
     $optionsArray = [
         ['timeout' => 30],
@@ -75,7 +76,7 @@ test('token accepts various guzzle options', function (): void {
 });
 
 test('token method signatures are correct', function (): void {
-    $token = new Token('test_client_id', 'test_secret_key');
+    $token = new Token('test_client_id', 'test_secret_key', 'https://api.da.pf.japanpost.jp/');
 
     // Test getToken method
     $getTokenMethod = new ReflectionMethod($token, 'getToken');
@@ -102,6 +103,7 @@ test('token constructor parameters are correctly typed', function (): void {
     expect($parameters[1]->getName())->toEqual('secretKey');
     expect($parameters[2]->getName())->toEqual('baseUri');
     expect($parameters[3]->getName())->toEqual('cache');
+    expect($parameters[4]->getName())->toEqual('httpClient');
     expect($parameters[0]->hasType())->toBeTrue();
     expect($parameters[1]->hasType())->toBeTrue();
     expect($parameters[2]->hasType())->toBeTrue();
@@ -116,17 +118,17 @@ test('token handles different client credentials', function (): void {
     ];
 
     foreach ($credentials as $credential) {
-        $token = new Token($credential['client_id'], $credential['secret_key']);
+        $token = new Token($credential['client_id'], $credential['secret_key'], 'https://api.da.pf.japanpost.jp/');
         expect($token)->toBeInstanceOf(Token::class);
     }
 });
 
 test('token maintains cache properties', function (): void {
-    $token = new Token('test_client_id', 'test_secret_key');
+    $token = new Token('test_client_id', 'test_secret_key', 'https://api.da.pf.japanpost.jp/');
 
     $reflection = new ReflectionClass($token);
 
     expect($reflection->hasProperty('cache'))->toBeTrue();
     expect($reflection->hasProperty('cacheTtl'))->toBeTrue();
-    expect($reflection->hasProperty('guzzleOptions'))->toBeTrue();
+    expect($reflection->hasProperty('httpClient'))->toBeTrue();
 });

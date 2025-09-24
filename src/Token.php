@@ -14,34 +14,34 @@ class Token
 {
     protected const CACHE_PREFIX = 'japanpost';
 
+    protected HttpClient $httpClient;
+
     protected CacheInterface $cache;
 
     protected int $cacheTtl = 3600;
 
-    protected array $guzzleOptions = [];
-
     public function __construct(
         protected string $clientId,
         protected string $secretKey,
-        protected string $baseUri = 'https://api.da.pf.japanpost.jp/',
+        protected string $baseUri,
         ?CacheInterface $cache = null,
+        ?HttpClient $httpClient = null,
     ) {
         $this->cache = $cache ?? new Psr16Cache(new FilesystemAdapter(
             namespace: self::CACHE_PREFIX,
             defaultLifetime: $this->cacheTtl
         ));
+        $this->httpClient = $httpClient ?? new HttpClient($this->baseUri);
     }
 
     public function getHttpClient(): Client
     {
-        return new Client(array_merge($this->guzzleOptions, [
-            'base_uri' => $this->baseUri,
-        ]));
+        return $this->httpClient->getClient();
     }
 
     public function setGuzzleOptions(array $options): void
     {
-        $this->guzzleOptions = $options;
+        $this->httpClient->setOptions($options);
     }
 
     public function getToken(): string

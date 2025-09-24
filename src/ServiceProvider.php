@@ -21,10 +21,18 @@ class ServiceProvider extends BaseServiceProvider
 
     private function registerBindings()
     {
+        $this->registerHttpClient();
         $this->registerJapanpost();
         $this->registerToken();
         $this->registerAddressZip();
         $this->registerSearchCode();
+    }
+
+    private function registerHttpClient()
+    {
+        $this->app->singleton(HttpClient::class, fn () => new HttpClient(
+            baseUri: config('services.japanpost.base_uri')
+        ));
     }
 
     private function registerJapanpost()
@@ -39,7 +47,8 @@ class ServiceProvider extends BaseServiceProvider
                 config('services.japanpost.client_id'),
                 config('services.japanpost.secret_key'),
                 config('services.japanpost.base_uri'),
-                $app->make('cache.store')
+                $app->make('cache.store'),
+                $app->make(HttpClient::class)
             );
 
             return $token;
@@ -50,10 +59,12 @@ class ServiceProvider extends BaseServiceProvider
 
     private function registerAddressZip()
     {
-        $this->app->singleton(AddressZip::class, fn () => new AddressZip(
+        $this->app->singleton(AddressZip::class, fn ($app) => new AddressZip(
             config('services.japanpost.client_id'),
             config('services.japanpost.secret_key'),
-            config('services.japanpost.base_uri')
+            config('services.japanpost.base_uri'),
+            null,
+            $app->make(HttpClient::class)
         ));
 
         $this->app->alias(AddressZip::class, 'japanpost.address_zip');
@@ -61,10 +72,12 @@ class ServiceProvider extends BaseServiceProvider
 
     private function registerSearchCode()
     {
-        $this->app->singleton(SearchCode::class, fn () => new SearchCode(
+        $this->app->singleton(SearchCode::class, fn ($app) => new SearchCode(
             config('services.japanpost.client_id'),
             config('services.japanpost.secret_key'),
-            config('services.japanpost.base_uri')
+            config('services.japanpost.base_uri'),
+            null,
+            $app->make(HttpClient::class)
         ));
 
         $this->app->alias(SearchCode::class, 'japanpost.search_code');

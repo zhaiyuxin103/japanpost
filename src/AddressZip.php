@@ -9,27 +9,26 @@ use Yuxin\Japanpost\Exceptions\AddressesNotFoundException;
 
 class AddressZip
 {
-    public array $guzzleOptions = [];
+    protected HttpClient $httpClient;
 
     public function __construct(
-        protected ?string $clientId = null,
-        protected ?string $secretKey = null,
-        protected string $baseUri = 'https://api.da.pf.japanpost.jp/',
-        protected ?string $token = null,
+        protected ?string $clientId,
+        protected ?string $secretKey,
+        protected string $baseUri,
+        protected ?string $token,
+        ?HttpClient $httpClient = null,
     ) {
-        //
+        $this->httpClient = $httpClient ?? new HttpClient($this->baseUri);
     }
 
     public function getHttpClient(): Client
     {
-        return new Client(array_merge($this->guzzleOptions, [
-            'base_uri' => $this->baseUri,
-        ]));
+        return $this->httpClient->getClient();
     }
 
     public function setGuzzleOptions(array $options): void
     {
-        $this->guzzleOptions = $options;
+        $this->httpClient->setOptions($options);
     }
 
     public function search(
@@ -37,7 +36,7 @@ class AddressZip
         int $page = 1,
         int $limit = 1000,
     ) {
-        $token    = $this->token ?: (new Token($this->clientId, $this->secretKey))->getToken();
+        $token    = $this->token ?: (new Token($this->clientId, $this->secretKey, $this->baseUri))->getToken();
         $response = json_decode($this->getHttpClient()->post('api/v1/addresszip', [
             'headers' => [
                 'Authorization' => 'Bearer ' . $token,

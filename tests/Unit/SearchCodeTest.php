@@ -5,7 +5,7 @@ declare(strict_types=1);
 use Yuxin\Japanpost\SearchCode;
 
 test('search code can be instantiated with required parameters', function (): void {
-    $searchCode = new SearchCode('test_client_id', 'test_secret_key');
+    $searchCode = new SearchCode('test_client_id', 'test_secret_key', 'https://api.da.pf.japanpost.jp/');
 
     expect($searchCode)->toBeInstanceOf(SearchCode::class);
 });
@@ -14,7 +14,7 @@ test('search code can be instantiated with all parameters', function (): void {
     $searchCode = new SearchCode(
         'test_client_id',
         'test_secret_key',
-        'https://api.example.com/',
+        'https://api.da.pf.japanpost.jp/',
         'test_token'
     );
 
@@ -22,14 +22,14 @@ test('search code can be instantiated with all parameters', function (): void {
 });
 
 test('search code has required methods', function (): void {
-    $searchCode = new SearchCode('test_client_id', 'test_secret_key');
+    $searchCode = new SearchCode('test_client_id', 'test_secret_key', 'https://api.da.pf.japanpost.jp/');
 
     // SearchCode class has required methods
     expect($searchCode)->toBeInstanceOf(SearchCode::class);
 });
 
 test('search code can set custom guzzle options', function (): void {
-    $searchCode = new SearchCode('test_client_id', 'test_secret_key');
+    $searchCode = new SearchCode('test_client_id', 'test_secret_key', 'https://api.da.pf.japanpost.jp/');
 
     $options = ['timeout' => 30, 'verify' => false];
     $searchCode->setGuzzleOptions($options);
@@ -38,7 +38,7 @@ test('search code can set custom guzzle options', function (): void {
 });
 
 test('search code get http client returns guzzle client', function (): void {
-    $searchCode = new SearchCode('test_client_id', 'test_secret_key');
+    $searchCode = new SearchCode('test_client_id', 'test_secret_key', 'https://api.da.pf.japanpost.jp/');
 
     $client = $searchCode->getHttpClient();
 
@@ -46,7 +46,7 @@ test('search code get http client returns guzzle client', function (): void {
 });
 
 test('search code has correct search method signature', function (): void {
-    $searchCode = new SearchCode('test_client_id', 'test_secret_key');
+    $searchCode = new SearchCode('test_client_id', 'test_secret_key', 'https://api.da.pf.japanpost.jp/');
 
     $reflection       = new ReflectionClass($searchCode);
     $reflectionMethod = $reflection->getMethod('search');
@@ -76,7 +76,7 @@ test('search code can accept custom token', function (): void {
     $tokens = ['custom_token_1', 'custom_token_2', 'custom_token_3'];
 
     foreach ($tokens as $token) {
-        $searchCode = new SearchCode('test_client_id', 'test_secret_key', 'https://api.example.com/', $token);
+        $searchCode = new SearchCode('test_client_id', 'test_secret_key', 'https://api.da.pf.japanpost.jp/', $token);
         $client     = $searchCode->getHttpClient();
 
         expect($client)->toBeInstanceOf(GuzzleHttp\Client::class);
@@ -84,7 +84,7 @@ test('search code can accept custom token', function (): void {
 });
 
 test('search code accepts various guzzle options', function (): void {
-    $searchCode = new SearchCode('test_client_id', 'test_secret_key');
+    $searchCode = new SearchCode('test_client_id', 'test_secret_key', 'https://api.da.pf.japanpost.jp/');
 
     $optionsArray = [
         ['timeout' => 30],
@@ -108,13 +108,13 @@ test('search code handles different client configurations', function (): void {
     ];
 
     foreach ($clients as $client) {
-        $searchCode = new SearchCode($client['client_id'], $client['secret_key']);
+        $searchCode = new SearchCode($client['client_id'], $client['secret_key'], 'https://api.da.pf.japanpost.jp/');
         expect($searchCode)->toBeInstanceOf(SearchCode::class);
     }
 });
 
 test('search code handles guzzle options correctly', function (): void {
-    $searchCode = new SearchCode('test_client_id', 'test_secret_key');
+    $searchCode = new SearchCode('test_client_id', 'test_secret_key', 'https://api.da.pf.japanpost.jp/');
 
     $options = ['timeout' => 30];
     $searchCode->setGuzzleOptions($options);
@@ -123,7 +123,7 @@ test('search code handles guzzle options correctly', function (): void {
 });
 
 test('search code method parameters are correctly typed', function (): void {
-    $searchCode = new SearchCode('test_client_id', 'test_secret_key');
+    $searchCode = new SearchCode('test_client_id', 'test_secret_key', 'https://api.da.pf.japanpost.jp/');
 
     $reflection  = new ReflectionClass($searchCode);
     $constructor = $reflection->getConstructor();
@@ -131,6 +131,12 @@ test('search code method parameters are correctly typed', function (): void {
 
     expect($parameters[0]->getName())->toEqual('clientId');
     expect($parameters[1]->getName())->toEqual('secretKey');
+    expect($parameters[2]->getName())->toEqual('baseUri');
+    expect($parameters[3]->getName())->toEqual('token');
+    expect($parameters[4]->getName())->toEqual('httpClient');
     expect($parameters[0]->hasType())->toBeTrue();
     expect($parameters[1]->hasType())->toBeTrue();
+    expect($parameters[2]->hasType())->toBeTrue();
+    expect($parameters[3]->hasType())->toBeTrue();
+    expect($parameters[4]->hasType())->toBeTrue();
 });
