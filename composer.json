@@ -19,7 +19,9 @@
   ],
   "minimum-stability": "stable",
   "require": {
-    "guzzlehttp/guzzle": "^7.10"
+    "guzzlehttp/guzzle": "^7.10",
+    "psr/simple-cache": "^3.0",
+    "symfony/cache": "^7.3"
   },
   "require-dev": {
     "pestphp/pest": "^4.0",

@@ -18,6 +18,8 @@
 - 🚀 **Laravel 集成** - 原生 Laravel 服务提供者支持
 - 🛡️ **异常处理** - 完善的错误处理和自定义异常
 - ⚙️ **灵活配置** - 支持自定义 HTTP 客户端选项
+- 💾 **Token 缓存** - 自动缓存 API 令牌，提高性能
+- 🌐 **多环境支持** - 支持测试和生产环境切换
 
 ## 📋 系统要求
 
@@ -47,7 +49,14 @@ php artisan vendor:publish --provider="Yuxin\Japanpost\ServiceProvider"
 ```env
 JAPANPOST_CLIENT_ID=your_client_id_here
 JAPANPOST_SECRET_KEY=your_secret_key_here
+JAPANPOST_BASE_URI=https://api.da.pf.japanpost.jp/
 ```
+
+**环境配置说明：**
+
+- `JAPANPOST_BASE_URI`：API 基础 URL，支持测试和生产环境
+  - 生产环境：`https://api.da.pf.japanpost.jp/`（默认）
+  - 测试环境：`https://test-api.example.com/`（示例）
 
 ### 配置文件
 
@@ -57,6 +66,7 @@ JAPANPOST_SECRET_KEY=your_secret_key_here
 'japanpost' => [
     'client_id'  => env('JAPANPOST_CLIENT_ID'),
     'secret_key' => env('JAPANPOST_SECRET_KEY'),
+    'base_uri'   => env('JAPANPOST_BASE_URI', 'https://api.da.pf.japanpost.jp/'),
 ],
 ```
 
@@ -66,14 +76,31 @@ JAPANPOST_SECRET_KEY=your_secret_key_here
 
 ```php
 use Yuxin\Japanpost\Token;
+use Psr\SimpleCache\CacheInterface;
 
-// 通过依赖注入获取
+// 通过依赖注入获取（推荐，自动启用缓存）
 $token = app('japanpost.token')->getToken();
 
-// 或直接实例化
+// 直接实例化（使用默认文件缓存）
 $tokenService = new Token($clientId, $secretKey);
 $token = $tokenService->getToken();
+
+// 自定义缓存实现
+$tokenService = new Token($clientId, $secretKey, 'https://api.da.pf.japanpost.jp/', $cache);
+$token = $tokenService->getToken();
+
+// 设置自定义缓存时间
+$tokenService = new Token($clientId, $secretKey);
+$tokenService->setCacheTtl(1800); // 30分钟
+$token = $tokenService->getToken();
 ```
+
+**缓存机制：**
+
+- 自动缓存 API 令牌，默认缓存时间为 3600 秒（1小时）
+- 使用 PSR-16 缓存标准，支持多种缓存实现
+- Laravel 环境中自动使用 Laravel 缓存系统
+- 独立使用时默认使用 Symfony 文件缓存
 
 ### 2. 地址查询
 
@@ -90,8 +117,15 @@ $addresses = $addressService->search([
     'street' => '渋谷'
 ], 1, 100);
 
-// 或直接实例化
+// 直接实例化（使用默认配置）
 $addressService = new AddressZip($clientId, $secretKey);
+$addresses = $addressService->search([
+    'prefecture' => '東京都',
+    'city' => '渋谷区'
+]);
+
+// 自定义 API 基础 URL
+$addressService = new AddressZip($clientId, $secretKey, 'https://test-api.example.com/');
 $addresses = $addressService->search([
     'prefecture' => '東京都',
     'city' => '渋谷区'
@@ -109,12 +143,30 @@ $searchService = app('japanpost.search_code');
 // 通过邮编搜索地址
 $addresses = $searchService->search('150-0002', 1, 100);
 
-// 或直接实例化
+// 直接实例化（使用默认配置）
 $searchService = new SearchCode($clientId, $secretKey);
+$addresses = $searchService->search('150-0002');
+
+// 自定义 API 基础 URL
+$searchService = new SearchCode($clientId, $secretKey, 'https://test-api.example.com/');
 $addresses = $searchService->search('150-0002');
 ```
 
-### 4. 自定义 HTTP 客户端选项
+### 4. 环境切换示例
+
+```php
+// 生产环境配置
+$productionToken = new Token($clientId, $secretKey, 'https://api.da.pf.japanpost.jp/');
+$productionAddress = new AddressZip($clientId, $secretKey, 'https://api.da.pf.japanpost.jp/');
+$productionSearch = new SearchCode($clientId, $secretKey, 'https://api.da.pf.japanpost.jp/');
+
+// 测试环境配置
+$testToken = new Token($clientId, $secretKey, 'https://test-api.example.com/');
+$testAddress = new AddressZip($clientId, $secretKey, 'https://test-api.example.com/');
+$testSearch = new SearchCode($clientId, $secretKey, 'https://test-api.example.com/');
+```
+
+### 5. 自定义 HTTP 客户端选项
 
 ```php
 $addressService = app('japanpost.address_zip');
