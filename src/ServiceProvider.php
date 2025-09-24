@@ -5,9 +5,11 @@ declare(strict_types=1);
 namespace Yuxin\Japanpost;
 
 use Illuminate\Support\ServiceProvider as BaseServiceProvider;
+use Override;
 
 class ServiceProvider extends BaseServiceProvider
 {
+    #[Override]
     public function register()
     {
         $this->mergeConfigFrom(
@@ -26,27 +28,21 @@ class ServiceProvider extends BaseServiceProvider
 
     private function registerToken()
     {
-        $this->app->singleton(Token::class, function () {
-            return new Token(config('services.japanpost.client_id'), config('services.japanpost.secret_key'));
-        });
+        $this->app->singleton(Token::class, fn () => new Token(config('services.japanpost.client_id'), config('services.japanpost.secret_key')));
 
         $this->app->alias(Token::class, 'japanpost.token');
     }
 
     private function registerAddressZip()
     {
-        $this->app->singleton(AddressZip::class, function () {
-            return new AddressZip(config('services.japanpost.client_id'), config('services.japanpost.secret_key'));
-        });
+        $this->app->singleton(AddressZip::class, fn () => new AddressZip(config('services.japanpost.client_id'), config('services.japanpost.secret_key')));
 
         $this->app->alias(AddressZip::class, 'japanpost.address_zip');
     }
 
     private function registerSearchCode()
     {
-        $this->app->singleton(SearchCode::class, function () {
-            return new SearchCode(config('services.japanpost.client_id'), config('services.japanpost.secret_key'));
-        });
+        $this->app->singleton(SearchCode::class, fn () => new SearchCode(config('services.japanpost.client_id'), config('services.japanpost.secret_key')));
 
         $this->app->alias(SearchCode::class, 'japanpost.search_code');
     }

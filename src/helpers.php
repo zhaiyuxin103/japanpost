@@ -19,7 +19,7 @@ if (! function_exists('getClientIP')) {
 
         foreach ($headers as $header) {
             if (! empty($_SERVER[$header])) {
-                $ips = explode(',', $_SERVER[$header]);
+                $ips = explode(',', (string) $_SERVER[$header]);
                 $ip  = trim($ips[0]);
 
                 // 验证 IP 地址格式
